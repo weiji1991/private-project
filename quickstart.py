@@ -1,8 +1,10 @@
+from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 from langchain_deepseek import ChatDeepSeek
 
 from llm.deepseek import ModelFactory, AgentFactory
 
+load_dotenv()
 
 # https://docs.langchain.com/oss/python/integrations/chat#chat-completions-api
 def get_weather(city: str) -> str:
@@ -16,7 +18,34 @@ agent = AgentFactory("deepseek-chat", [get_weather]).get_agent()
 #     [HumanMessage(content="what is the weather in 上海")]
 # ).pretty_print()
 
-result = agent.invoke(
-    {"messages": [HumanMessage(content="what is the weather in 上海")]}
-)
-print(result)
+for data in agent.stream(
+    {"messages": [HumanMessage(content="what is the weather in 上海")]},
+    stream_mode='messages'
+):
+    print(data)
+# for token, metadata in agent.stream(
+#     {"messages": [HumanMessage(content="what is the weather in 上海")]},
+#     stream_mode='messages'
+# ):
+#     print(token)
+#     print(type(metadata))
+#     print(metadata)
+#     print('------------------------------------------------------------')
+
+# for chuck in agent.stream(
+#     {"messages": [HumanMessage(content="what is the weather in 上海")]},
+#     stream_mode='updates'
+# ):
+#     # print(chuck)
+#     for step, data in chuck.items():
+#         print(step)
+#         print(data["messages"][-1].content)
+
+# for chuck in agent.stream(
+#     {"messages": [HumanMessage(content="what is the weather in 上海")]},
+#     stream_mode=['updates', 'messages']
+# ):
+#     print(chuck)
+    # for step, data in chuck.items():
+    #     print(step)
+    #     print(data["messages"][-1].content)
